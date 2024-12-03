@@ -2,7 +2,7 @@ import os
 
 
 markdown_filename = os.path.expanduser(
-    "~/boot_dev/Static_Site_Generator/content/index.md"
+    "~/boot_dev/Static_Site_Generator/content/tolkien.md"
 )
 
 

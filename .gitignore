@@ -1,0 +1,7 @@
+__pycache__/
+*~
+/public/
+/.dir-locals.el
+\#*
+.\#*
+*\.org

@@ -33,5 +33,7 @@ def split_line_group_into_words(line_group: list[str]) -> list[list[str]]:
 line_groups = list(map(split_block_into_lines, blocks))
 
 
-for line_group in line_groups:
-    print(split_line_group_into_words(line_group))
+tree = list(map(split_line_group_into_words, line_groups))
+
+for entry in tree:
+    print(entry)

@@ -116,7 +116,9 @@ def convert_line_group_to_tuple(line_group: list[str]):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse a Markdown file.")
-    parser.add_argument("nickname", type=str, help="The name of the Markdown file (no file suffix)")
+    parser.add_argument("nickname",
+                        type=str,
+                        help="The name of the Markdown file (no file suffix)")
 
     args = parser.parse_args()
     nickname = args.nickname

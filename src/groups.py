@@ -1,5 +1,4 @@
 import os
-import re
 
 
 def get_markdown_file_content(nickname: str) -> str:

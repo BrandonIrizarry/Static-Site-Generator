@@ -28,22 +28,45 @@ def split_block_into_lines(block: str) -> list[str]:
 
 line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
 
-acc: list[list[str]] = []
-inside_code_block = False
 
-for lg in line_groups:
-    if lg[0] == "```":
-        inside_code_block = True
-        acc.append([])
+def join_code_block_members(line_groups: list[list[str]]) -> list[list[str]]:
+    """For each code block, join the associated blocks as if they were
+    originally a single block.
 
-    if inside_code_block:
-        acc[-1].extend(lg)
-    else:
-        acc.append(lg)
+    We need this because code blocks themselves are literal text, and
+    can contain their own spacing; so double-newline isn't sufficient
+    for isolating them properly.
 
-    if lg[-1] == "```":
-        inside_code_block = False
+    """
 
-for lg in acc:
+    acc: list[list[str]] = []
+    inside_code_block = False
+
+    for lg in line_groups:
+        # If this line group begins in "```", then we enter code block
+        # mode, and so we append an empty list to our running result,
+        # which will hold the line groups associated with the newly
+        # detected code block.
+        if lg[0] == "```":
+            inside_code_block = True
+            acc.append([])
+
+        if inside_code_block:
+            acc[-1].extend(lg)
+        else:
+            acc.append(lg)
+
+        # If this line group ends in "```", then we exit code block
+        # mode.
+        if lg[-1] == "```":
+            inside_code_block = False
+
+    return acc
+
+
+preprocessed = join_code_block_members(line_groups)
+
+
+for p in preprocessed:
     print()
-    print(lg)
+    print(p)

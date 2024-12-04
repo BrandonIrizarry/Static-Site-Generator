@@ -67,6 +67,7 @@ def join_code_block_members(line_groups: list[list[str]]) -> list[list[str]]:
 
     return acc
 
+
 text = get_markdown_file_content("original_example")
 blocks = split_text_into_blocks(text)
 line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))

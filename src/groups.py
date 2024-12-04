@@ -1,4 +1,5 @@
 import os
+import re
 
 
 def get_markdown_file_content(nickname: str) -> str:
@@ -12,4 +13,15 @@ def get_markdown_file_content(nickname: str) -> str:
         return markdown_text
 
 
-print(get_markdown_file_content("original_example"))
+text = """
+* list item 1
+continuation of 1
+* list item 2
+continuation of 2
+"""
+
+print(text.split("\n\n"))
+
+m = re.match(r"\n\*\s+", text, re.MULTILINE)
+
+print(m)

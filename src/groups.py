@@ -80,14 +80,14 @@ preprocessed = join_code_block_members(line_groups)
 
 
 class BlockType(Enum):
+    H1 = 1
+    H2 = 2
+    H3 = 3
+    H4 = 4
+    H5 = 5
+    H6 = 6
     OL = auto()
     UL = auto()
-    H1 = auto()
-    H2 = auto()
-    H3 = auto()
-    H4 = auto()
-    H5 = auto()
-    H6 = auto()
     PRE_CODE = auto()
     BLOCKQUOTE = auto()
 

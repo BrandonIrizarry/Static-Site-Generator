@@ -88,6 +88,11 @@ def join_code_block_members(line_groups: list[list[str]]) -> list[list[str]]:
     return acc
 
 
+def create_word_groups(line_group: list[str]) -> list[list[str]]:
+    """Tokenize 'line_group' into separate words."""
+    word_groups = list(map(lambda line: re.split(r"\s+", line), line_group))
+
+    return word_groups
 
 
 def convert_line_group_to_tuple(line_group: list[str]):

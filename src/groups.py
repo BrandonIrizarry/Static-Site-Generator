@@ -12,19 +12,26 @@ def get_markdown_file_content(nickname: str) -> str:
         return markdown_text
 
 
-text = """
-* list item 1
-continuation of 1
-* list item 2
-continuation of 2
+text = get_markdown_file_content("original_example")
 
-- apples
-both green and red.
-- oranges
-both small and large
-"""
 
-blocks = text.split("\n\n")
-splits = [block.strip().split("\n") for block in blocks]
+def split_text_into_blocks(text: str) -> list[str]:
+    return text.split("\n\n")
 
-print(splits)
+
+blocks = split_text_into_blocks(text)
+
+
+def split_block_into_lines(block: str) -> list[str]:
+    return block.strip().split("\n")
+
+
+def split_line_group_into_words(line_group: list[str]) -> list[list[str]]:
+    return list(map(lambda line: line.split(" "), line_group))
+
+
+line_groups = list(map(split_block_into_lines, blocks))
+
+
+for line_group in line_groups:
+    print(split_line_group_into_words(line_group))

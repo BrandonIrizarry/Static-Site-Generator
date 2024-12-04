@@ -20,8 +20,7 @@ continuation of 1
 continuation of 2
 """
 
-print(text.split("\n\n"))
+blocks = text.split("\n\n")
+splits = [block.strip().split("\n") for block in blocks]
 
-m = re.match(r"\n\*\s+", text, re.MULTILINE)
-
-print(m)
+print(splits)

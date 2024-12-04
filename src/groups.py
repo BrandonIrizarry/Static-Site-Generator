@@ -136,6 +136,12 @@ if __name__ == "__main__":
     line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
     preprocessed = join_code_block_members(line_groups)
 
+    word_tree = list(map(create_word_groups, line_groups))
+
+    for ws in word_tree:
+        print()
+        print(ws)
+
     enum_tagged = list(map(convert_line_group_to_tuple, preprocessed))
 
     for e in enum_tagged:

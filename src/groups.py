@@ -62,7 +62,11 @@ def join_code_block_members(line_groups: list[list[str]]) -> list[list[str]]:
 
         # If this line group ends in "```", then we exit code block
         # mode.
+        #
+        # Also, we don't need the final "```" for HTML conversion, so
+        # get rid of it.
         if lg[-1] == "```":
+            acc[-1].pop()
             inside_code_block = False
 
     return acc

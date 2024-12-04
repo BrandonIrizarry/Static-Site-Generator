@@ -1,4 +1,5 @@
 import os
+import argparse
 from enum import Enum, auto
 
 
@@ -73,12 +74,6 @@ def join_code_block_members(line_groups: list[list[str]]) -> list[list[str]]:
     return acc
 
 
-text = get_markdown_file_content("original_example")
-blocks = split_text_into_blocks(text)
-line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
-preprocessed = join_code_block_members(line_groups)
-
-
 class BlockType(Enum):
     H1 = 1
     H2 = 2
@@ -119,8 +114,20 @@ def convert_line_group_to_tuple(line_group: list[str]):
         return (BlockType.BLOCKQUOTE, line_group)
 
 
-enum_tagged = list(map(convert_line_group_to_tuple, preprocessed))
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Parse a Markdown file.")
+    parser.add_argument("nickname", type=str, help="The name of the Markdown file (no file suffix)")
 
-for e in enum_tagged:
-    print()
-    print(e)
+    args = parser.parse_args()
+    nickname = args.nickname
+
+    text = get_markdown_file_content(nickname)
+    blocks = split_text_into_blocks(text)
+    line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
+    preprocessed = join_code_block_members(line_groups)
+
+    enum_tagged = list(map(convert_line_group_to_tuple, preprocessed))
+
+    for e in enum_tagged:
+        print()
+        print(e)

@@ -2,6 +2,12 @@ import os
 
 
 def get_markdown_file_content(nickname: str) -> str:
+    """Return contents of 'nickname'.md.
+
+    This file should be found in the 'content' directory, under the
+    project root.
+
+    """
     markdown_filename = os.path.expanduser(
         f"~/boot_dev/Static_Site_Generator/content/{nickname}.md"
     )
@@ -13,10 +19,17 @@ def get_markdown_file_content(nickname: str) -> str:
 
 
 def split_text_into_blocks(text: str) -> list[str]:
+    """Isolate 'text' into blocks which are more readily identifiable
+    as Markdown entities."""
     return text.split("\n\n")
 
 
 def split_block_into_lines(block: str) -> list[str]:
+    """Split the given block into its component lines.
+
+    This should aid in supporting multi-line list items, for example.
+
+    """
     return block.strip().split("\n")
 
 

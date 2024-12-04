@@ -4,6 +4,19 @@ import re
 from enum import Enum, auto
 
 
+class BlockType(Enum):
+    H1 = 1
+    H2 = 2
+    H3 = 3
+    H4 = 4
+    H5 = 5
+    H6 = 6
+    OL = auto()
+    UL = auto()
+    PRE_CODE = auto()
+    BLOCKQUOTE = auto()
+
+
 def get_markdown_file_content(nickname: str) -> str:
     """Return contents of 'nickname'.md.
 
@@ -75,17 +88,6 @@ def join_code_block_members(line_groups: list[list[str]]) -> list[list[str]]:
     return acc
 
 
-class BlockType(Enum):
-    H1 = 1
-    H2 = 2
-    H3 = 3
-    H4 = 4
-    H5 = 5
-    H6 = 6
-    OL = auto()
-    UL = auto()
-    PRE_CODE = auto()
-    BLOCKQUOTE = auto()
 
 
 def convert_line_group_to_tuple(line_group: list[str]):

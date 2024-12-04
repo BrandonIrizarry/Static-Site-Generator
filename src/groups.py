@@ -17,6 +17,11 @@ text = """
 continuation of 1
 * list item 2
 continuation of 2
+
+- apples
+both green and red.
+- oranges
+both small and large
 """
 
 blocks = text.split("\n\n")

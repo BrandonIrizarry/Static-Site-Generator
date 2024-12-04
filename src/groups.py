@@ -1,4 +1,5 @@
 import os
+from enum import Enum, auto
 
 
 def get_markdown_file_content(nickname: str) -> str:
@@ -78,6 +79,48 @@ line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
 preprocessed = join_code_block_members(line_groups)
 
 
-for p in preprocessed:
+class BlockType(Enum):
+    OL = auto()
+    UL = auto()
+    H1 = auto()
+    H2 = auto()
+    H3 = auto()
+    H4 = auto()
+    H5 = auto()
+    H6 = auto()
+    PRE_CODE = auto()
+    BLOCKQUOTE = auto()
+
+
+def convert_line_group_to_tuple(line_group: list[str]):
+    first_line = line_group[0]
+
+    if first_line.startswith("1. "):
+        return (BlockType.OL, line_group)
+    elif first_line.startswith("* ") or first_line.startswith("- "):
+        return (BlockType.UL, line_group)
+    elif first_line.startswith("# "):
+        return (BlockType.H1, line_group)
+    elif first_line.startswith("## "):
+        return (BlockType.H2, line_group)
+    elif first_line.startswith("### "):
+        return (BlockType.H3, line_group)
+    elif first_line.startswith("#### "):
+        return (BlockType.H4, line_group)
+    elif first_line.startswith("##### "):
+        return (BlockType.H5, line_group)
+    elif first_line.startswith("###### "):
+        return (BlockType.H6, line_group)
+    elif first_line.startswith("```"):
+        # The "```" doesn't add any more information at this point, so
+        # get rid of it.
+        return (BlockType.PRE_CODE, line_group[1:])
+    elif first_line.startswith("> "):
+        return (BlockType.BLOCKQUOTE, line_group)
+
+
+enum_tagged = list(map(convert_line_group_to_tuple, preprocessed))
+
+for e in enum_tagged:
     print()
-    print(p)
+    print(e)

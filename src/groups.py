@@ -26,14 +26,24 @@ def split_block_into_lines(block: str) -> list[str]:
     return block.strip().split("\n")
 
 
-def split_line_group_into_words(line_group: list[str]) -> list[list[str]]:
-    return list(map(lambda line: line.split(" "), line_group))
+line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
 
+acc: list[list[str]] = []
+inside_code_block = False
 
-line_groups = list(map(split_block_into_lines, blocks))
+for lg in line_groups:
+    if lg[0] == "```":
+        inside_code_block = True
+        acc.append([])
 
+    if inside_code_block:
+        acc[-1].extend(lg)
+    else:
+        acc.append(lg)
 
-tree = list(map(split_line_group_into_words, line_groups))
+    if lg[-1] == "```":
+        inside_code_block = False
 
-for entry in tree:
-    print(entry)
+for lg in acc:
+    print()
+    print(lg)

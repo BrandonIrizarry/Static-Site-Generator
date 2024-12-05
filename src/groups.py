@@ -151,7 +151,8 @@ def tokenize_inline_style_markers(words: list[str]) -> list[str]:
 
         if splitted[0] == "":
             del splitted[0]
-        elif splitted[-1] == "":
+
+        if len(splitted) > 0 and splitted[-1] == "":
             del splitted[-1]
 
         return splitted

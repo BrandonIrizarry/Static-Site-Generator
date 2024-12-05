@@ -1,20 +1,6 @@
 import os
 import argparse
 import re
-from enum import Enum, auto
-
-
-class BlockType(Enum):
-    H1 = 1
-    H2 = 2
-    H3 = 3
-    H4 = 4
-    H5 = 5
-    H6 = 6
-    OL = auto()
-    UL = auto()
-    PRE_CODE = auto()
-    BLOCKQUOTE = auto()
 
 
 def get_markdown_file_content(nickname: str) -> str:
@@ -95,33 +81,6 @@ def create_word_groups(line_group: list[str]) -> list[list[str]]:
     return word_groups
 
 
-def convert_line_group_to_tuple(line_group: list[str]):
-    first_line = line_group[0]
-
-    if first_line.startswith("1. "):
-        return (BlockType.OL, line_group)
-    elif first_line.startswith("* ") or first_line.startswith("- "):
-        return (BlockType.UL, line_group)
-    elif first_line.startswith("# "):
-        return (BlockType.H1, line_group)
-    elif first_line.startswith("## "):
-        return (BlockType.H2, line_group)
-    elif first_line.startswith("### "):
-        return (BlockType.H3, line_group)
-    elif first_line.startswith("#### "):
-        return (BlockType.H4, line_group)
-    elif first_line.startswith("##### "):
-        return (BlockType.H5, line_group)
-    elif first_line.startswith("###### "):
-        return (BlockType.H6, line_group)
-    elif first_line.startswith("```"):
-        # The "```" doesn't add any more information at this point, so
-        # get rid of it.
-        return (BlockType.PRE_CODE, line_group[1:])
-    elif first_line.startswith("> "):
-        return (BlockType.BLOCKQUOTE, line_group)
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse a Markdown file.")
     parser.add_argument("nickname",
@@ -141,9 +100,3 @@ if __name__ == "__main__":
     for ws in word_tree:
         print()
         print(ws)
-
-    enum_tagged = list(map(convert_line_group_to_tuple, preprocessed))
-
-    for e in enum_tagged:
-        print()
-        print(e)

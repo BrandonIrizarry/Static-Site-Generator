@@ -23,6 +23,9 @@ class BlockType(IntEnum):
                         BlockType.UL,
                         BlockType.BLOCKQUOTE)
 
+    def is_header(self):
+        return self in range(self.H1, self.H6)
+
 
 def get_markdown_file_content(nickname: str) -> str:
     """Return contents of 'nickname'.md.
@@ -122,12 +125,18 @@ def identify_block_type(token: str):
         return key[token]
 
 
-def make_tuples(group):
+def make_tuples(group: list[list[str]]):
     first_token = group[0][0]
     tag = identify_block_type(first_token)
 
+    # Remove extraneous Markdown artifacts previously used for parsing
     if tag == BlockType.PRE_CODE:
         group = group[1:]
+    elif tag.is_header():
+        if len(group) != 1:
+            raise RuntimeError(f"Illegal header block with {len(group)} lines")
+
+        group = [group[0][1:]]
 
     return (tag, group)
 

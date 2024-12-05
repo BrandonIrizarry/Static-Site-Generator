@@ -132,6 +132,27 @@ def make_tuples(group):
     return (tag, group)
 
 
+def compact_group(typed_block: tuple[BlockType, list[list[str]]]):
+    acc = []
+    what: BlockType = typed_block[0]
+
+    if (not what.is_group()):
+        return typed_block
+    else:
+        groups = typed_block[1]
+
+        for words in groups:
+            token = words[0]
+            pseudo_type = identify_block_type(token)
+
+            if pseudo_type == what:
+                acc.append(words)
+            else:
+                acc[-1].extend(["\n"] + words)
+
+    return (what, acc)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse a Markdown file.")
     parser.add_argument("nickname",
@@ -150,6 +171,7 @@ if __name__ == "__main__":
                                                 preprocessed))
 
     enum_tagged = list(map(make_tuples, word_tree))
+    enum_tagged = list(map(compact_group, enum_tagged))
 
     for e in enum_tagged:
         print()

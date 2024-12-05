@@ -90,12 +90,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     nickname = args.nickname
 
-    text = get_markdown_file_content(nickname)
-    blocks = split_text_into_blocks(text)
+    text: str = get_markdown_file_content(nickname)
+    blocks: list[str] = split_text_into_blocks(text)
     line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
-    preprocessed = join_code_block_members(line_groups)
+    preprocessed: list[list[str]] = join_code_block_members(line_groups)
 
-    word_tree = list(map(create_word_groups, preprocessed))
+    word_tree: list[list[list[str]]] = list(map(create_word_groups,
+                                                preprocessed))
 
     for ws in word_tree:
         print()

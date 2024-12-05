@@ -19,9 +19,9 @@ class BlockType(IntEnum):
     P = auto()
 
     def is_group(self):
-        return self in (BlockType.OL,
-                        BlockType.UL,
-                        BlockType.BLOCKQUOTE)
+        return self in (self.OL,
+                        self.UL,
+                        self.BLOCKQUOTE)
 
     def is_header(self):
         return self in range(self.H1, self.H6)

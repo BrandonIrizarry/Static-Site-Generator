@@ -141,12 +141,39 @@ def make_tuples(group: list[list[str]]):
     return (tag, group)
 
 
-def compact_group(typed_block: tuple[BlockType, list[list[str]]]):
+def flatmap(lst, fn):
+    return [y for x in lst for y in fn(x)]
+
+
+def tokenize_inline_style_markers(words: list[str]) -> list[str]:
+    def split_and_remove_blanks(word) -> list[str]:
+        splitted: list[str] = re.split(r"(\*\*|\*|`)", word)
+
+        if splitted[0] == "":
+            del splitted[0]
+        elif splitted[-1] == "":
+            del splitted[-1]
+
+        return splitted
+
+    return flatmap(words, split_and_remove_blanks)
+
+
+def preprocess_typed_block(typed_block: tuple[BlockType, list[list[str]]]):
+    """Preprocess an already tagged Markdown block.
+
+    1. Tokenize words further by inline style marker (*, **, etc)
+    2. Consolidate multi-line list items into one list, such that each
+    member of 'typed_block' now represents a single list item.
+
+    """
     acc = []
     what: BlockType = typed_block[0]
 
     if (not what.is_group()):
-        return typed_block
+        for words in typed_block[1]:
+            acc.append(words)
+            acc[-1] = tokenize_inline_style_markers(acc[-1])
     else:
         groups = typed_block[1]
 
@@ -160,6 +187,8 @@ def compact_group(typed_block: tuple[BlockType, list[list[str]]]):
                 acc.append(words[1:])
             else:
                 acc[-1].extend(["\n"] + words)
+
+            acc[-1] = tokenize_inline_style_markers(acc[-1])
 
     return (what, acc)
 
@@ -182,7 +211,7 @@ if __name__ == "__main__":
                                                 preprocessed))
 
     enum_tagged = list(map(make_tuples, word_tree))
-    enum_tagged = list(map(compact_group, enum_tagged))
+    enum_tagged = list(map(preprocess_typed_block, enum_tagged))
 
     for e in enum_tagged:
         print()

@@ -155,7 +155,9 @@ def compact_group(typed_block: tuple[BlockType, list[list[str]]]):
             pseudo_type = identify_block_type(token)
 
             if pseudo_type == what:
-                acc.append(words)
+                # Here we can finally remove the various itemization
+                # tokens (*, -, 1./2./3. etc, and >)
+                acc.append(words[1:])
             else:
                 acc[-1].extend(["\n"] + words)
 

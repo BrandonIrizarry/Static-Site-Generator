@@ -1,22 +1,27 @@
 import os
 import argparse
 import re
-from enum import Flag, auto
+from enum import IntEnum, auto
+from collections import defaultdict
 
 
-class BlockType(Flag):
-    H1 = 1
-    H2 = 2
-    H3 = 3
-    H4 = 4
-    H5 = 5
-    H6 = 6
+class BlockType(IntEnum):
+    H1 = auto()
+    H2 = auto()
+    H3 = auto()
+    H4 = auto()
+    H5 = auto()
+    H6 = auto()
     OL = auto()
     UL = auto()
     PRE_CODE = auto()
     BLOCKQUOTE = auto()
     P = auto()
-    GROUP = OL | UL | BLOCKQUOTE
+
+    def is_group(self):
+        return self in (BlockType.OL,
+                        BlockType.UL,
+                        BlockType.BLOCKQUOTE)
 
 
 def get_markdown_file_content(nickname: str) -> str:
@@ -97,33 +102,28 @@ def create_word_groups(line_group: list[str]) -> list[list[str]]:
     return word_groups
 
 
-def convert_line_group_to_tuple(line_group: list[str]):
-    first_line = line_group[0]
+def make_tuples(group):
+    key = defaultdict(lambda: BlockType.P, {
+        "1.": BlockType.OL,
+        "*": BlockType.UL,
+        "-": BlockType.UL,
+        "#": BlockType.H1,
+        "##": BlockType.H2,
+        "###": BlockType.H3,
+        "####": BlockType.H4,
+        "#####": BlockType.H5,
+        "######": BlockType.H6,
+        "```": BlockType.PRE_CODE,
+        ">": BlockType.BLOCKQUOTE
+    })
 
-    if first_line.startswith("1. "):
-        return (BlockType.OL, line_group)
-    elif first_line.startswith("* ") or first_line.startswith("- "):
-        return (BlockType.UL, line_group)
-    elif first_line.startswith("# "):
-        return (BlockType.H1, line_group)
-    elif first_line.startswith("## "):
-        return (BlockType.H2, line_group)
-    elif first_line.startswith("### "):
-        return (BlockType.H3, line_group)
-    elif first_line.startswith("#### "):
-        return (BlockType.H4, line_group)
-    elif first_line.startswith("##### "):
-        return (BlockType.H5, line_group)
-    elif first_line.startswith("###### "):
-        return (BlockType.H6, line_group)
-    elif first_line.startswith("```"):
-        # The "```" doesn't add any more information at this point, so
-        # get rid of it.
-        return (BlockType.PRE_CODE, line_group[1:])
-    elif first_line.startswith("> "):
-        return (BlockType.BLOCKQUOTE, line_group)
-    else:
-        return (BlockType.P, line_group)
+    first_token = group[0][0]
+    tag = key[first_token]
+
+    if tag == BlockType.PRE_CODE:
+        group = group[1:]
+
+    return (key[first_token], group)
 
 
 if __name__ == "__main__":
@@ -143,11 +143,7 @@ if __name__ == "__main__":
     word_tree: list[list[list[str]]] = list(map(create_word_groups,
                                                 preprocessed))
 
-    for ws in word_tree:
-        print()
-        print(ws)
-
-    enum_tagged = list(map(convert_line_group_to_tuple, preprocessed))
+    enum_tagged = list(map(make_tuples, word_tree))
 
     for e in enum_tagged:
         print()

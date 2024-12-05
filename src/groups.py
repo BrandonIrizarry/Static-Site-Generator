@@ -95,7 +95,7 @@ if __name__ == "__main__":
     line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
     preprocessed = join_code_block_members(line_groups)
 
-    word_tree = list(map(create_word_groups, line_groups))
+    word_tree = list(map(create_word_groups, preprocessed))
 
     for ws in word_tree:
         print()

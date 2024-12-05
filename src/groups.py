@@ -102,9 +102,8 @@ def create_word_groups(line_group: list[str]) -> list[list[str]]:
     return word_groups
 
 
-def make_tuples(group):
+def identify_block_type(token: str):
     key = defaultdict(lambda: BlockType.P, {
-        "1.": BlockType.OL,
         "*": BlockType.UL,
         "-": BlockType.UL,
         "#": BlockType.H1,
@@ -117,13 +116,20 @@ def make_tuples(group):
         ">": BlockType.BLOCKQUOTE
     })
 
+    if re.match(r"\d+\.", token):
+        return BlockType.OL
+    else:
+        return key[token]
+
+
+def make_tuples(group):
     first_token = group[0][0]
-    tag = key[first_token]
+    tag = identify_block_type(first_token)
 
     if tag == BlockType.PRE_CODE:
         group = group[1:]
 
-    return (key[first_token], group)
+    return (tag, group)
 
 
 if __name__ == "__main__":

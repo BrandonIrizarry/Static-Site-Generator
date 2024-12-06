@@ -3,7 +3,7 @@ import argparse
 import re
 from enum import IntEnum, auto
 from collections import defaultdict
-from typing import Callable
+from typing import Callable, TypeAlias
 
 
 class Tag(IntEnum):
@@ -30,6 +30,9 @@ class Tag(IntEnum):
 
     def is_header(self):
         return self in range(self.H1, self.H6)
+
+
+Block: TypeAlias = tuple[Tag, list[list[str]]]
 
 
 def get_markdown_file_content(nickname: str) -> str:
@@ -176,7 +179,7 @@ def tokenize_inline_style_markers(words: list[str]) -> list[str]:
     return flatmap(words, split_and_remove_blanks)
 
 
-def preprocess_typed_block(typed_block: tuple[Tag, list[list[str]]]):
+def preprocess_typed_block(typed_block: Block):
     """Preprocess an already tagged Markdown block.
 
     1. Tokenize words further by inline style marker (*, **, etc)
@@ -210,7 +213,7 @@ def preprocess_typed_block(typed_block: tuple[Tag, list[list[str]]]):
     return (what, acc)
 
 
-def generate_structure(text: str):
+def generate_structure(text: str) -> list[Block]:
     blocks: list[str] = split_text_into_blocks(text)
     line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
     preprocessed: list[list[str]] = join_code_block_members(line_groups)

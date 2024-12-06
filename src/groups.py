@@ -222,9 +222,7 @@ def generate_structure(text: str):
     structure = (enum_tagged := map(make_tuples, word_tree),
                  list(map(preprocess_typed_block, enum_tagged)))[-1]
 
-    for e in structure:
-        print()
-        print(e)
+    return structure
 
 
 if __name__ == "__main__":
@@ -237,4 +235,6 @@ if __name__ == "__main__":
     nickname = args.nickname
     text: str = get_markdown_file_content(nickname)
 
-    print(generate_structure(text))
+    for i in generate_structure(text):
+        print()
+        print(i)

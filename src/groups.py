@@ -3,6 +3,7 @@ import argparse
 import re
 from enum import IntEnum, auto
 from collections import defaultdict
+from typing import Callable
 
 
 class BlockType(IntEnum):
@@ -141,7 +142,13 @@ def make_tuples(group: list[list[str]]):
     return (tag, group)
 
 
-def flatmap(lst, fn):
+def flatmap(lst, fn: Callable[[str], list[str]]):
+    """A flatmap function for Python lists of strings.
+
+    Apply 'fn' to the members of 'lst', then flatten and return the
+    result.
+
+    """
     return [y for x in lst for y in fn(x)]
 
 

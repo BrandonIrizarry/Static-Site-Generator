@@ -15,7 +15,7 @@ class TestProcessWordGroup(unittest.TestCase):
         processed = src.process_word_group(group)
 
         # Note that this represents a slight bug in our program.
-        self.assertEqual("This <b>is</b> a <i>line</i> : <code>hello world</code>", processed)
+        self.assertEqual("This <b>is</b> a <i>line</i>: <code>hello world</code>", processed)
 
     def test_mapping_over_list(self):
         groups = [

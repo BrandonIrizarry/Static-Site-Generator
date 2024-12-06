@@ -231,6 +231,10 @@ def preprocess_typed_block(typed_block: Block):
 
 
 def generate_structure(text: str) -> list[Block]:
+    """Generate the intermediate structure later used for HTML
+    generation.
+
+    """
     blocks: list[str] = split_text_into_blocks(text)
     line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
     preprocessed: list[list[str]] = join_code_block_members(line_groups)
@@ -246,6 +250,7 @@ def generate_structure(text: str) -> list[Block]:
 
 
 def process_word_group(group: list[str]):
+    """Rejoin a tokenized word-list back into an HTML string"""
     acc = []
     inside_bold = False
     inside_italic = False

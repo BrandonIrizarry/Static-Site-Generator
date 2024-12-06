@@ -321,8 +321,8 @@ def write_html(outfile, text: str):
             print(f"</{html_tag}>", file=outfile)
             print(file=outfile)
         elif tag == Tag.PRE_CODE:
-            # TODO: it looks like our preprocessing incorrectly
-            # swallows up a space from the code listing itself.
+            # FIXME: it looks like our preprocessing swallows up a
+            # space from the code listing itself.
             html_opening_tag = "<pre><code>"
             html_closing_tag = "</code></pre>"
 

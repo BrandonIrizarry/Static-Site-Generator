@@ -6,7 +6,7 @@ from collections import defaultdict
 from typing import Callable
 
 
-class BlockType(IntEnum):
+class Tag(IntEnum):
     """An enum used to classify Markdown blocks in terms of HTML block
     elements.
 
@@ -112,21 +112,21 @@ def create_word_groups(line_group: list[str]) -> list[list[str]]:
 
 def identify_block_type(token: str):
     """Identify a Markdown block according to Markdown syntax."""
-    key = defaultdict(lambda: BlockType.P, {
-        "*": BlockType.UL,
-        "-": BlockType.UL,
-        "#": BlockType.H1,
-        "##": BlockType.H2,
-        "###": BlockType.H3,
-        "####": BlockType.H4,
-        "#####": BlockType.H5,
-        "######": BlockType.H6,
-        "```": BlockType.PRE_CODE,
-        ">": BlockType.BLOCKQUOTE
+    key = defaultdict(lambda: Tag.P, {
+        "*": Tag.UL,
+        "-": Tag.UL,
+        "#": Tag.H1,
+        "##": Tag.H2,
+        "###": Tag.H3,
+        "####": Tag.H4,
+        "#####": Tag.H5,
+        "######": Tag.H6,
+        "```": Tag.PRE_CODE,
+        ">": Tag.BLOCKQUOTE
     })
 
     if re.match(r"\d+\.", token):
-        return BlockType.OL
+        return Tag.OL
     else:
         return key[token]
 
@@ -139,7 +139,7 @@ def make_tuples(group: list[list[str]]):
     tag = identify_block_type(first_token)
 
     # Remove extraneous Markdown artifacts previously used for parsing
-    if tag == BlockType.PRE_CODE:
+    if tag == Tag.PRE_CODE:
         group = group[1:]
     elif tag.is_header():
         if len(group) != 1:
@@ -176,7 +176,7 @@ def tokenize_inline_style_markers(words: list[str]) -> list[str]:
     return flatmap(words, split_and_remove_blanks)
 
 
-def preprocess_typed_block(typed_block: tuple[BlockType, list[list[str]]]):
+def preprocess_typed_block(typed_block: tuple[Tag, list[list[str]]]):
     """Preprocess an already tagged Markdown block.
 
     1. Tokenize words further by inline style marker (*, **, etc)
@@ -185,7 +185,7 @@ def preprocess_typed_block(typed_block: tuple[BlockType, list[list[str]]]):
 
     """
     acc = []
-    what: BlockType = typed_block[0]
+    what: Tag = typed_block[0]
 
     if (not what.is_group()):
         for words in typed_block[1]:

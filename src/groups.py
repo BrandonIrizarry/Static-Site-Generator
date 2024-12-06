@@ -7,6 +7,10 @@ from typing import Callable
 
 
 class BlockType(IntEnum):
+    """An enum used to classify Markdown blocks in terms of HTML block
+    elements.
+
+    """
     H1 = auto()
     H2 = auto()
     H3 = auto()
@@ -107,6 +111,7 @@ def create_word_groups(line_group: list[str]) -> list[list[str]]:
 
 
 def identify_block_type(token: str):
+    """Identify a Markdown block according to Markdown syntax."""
     key = defaultdict(lambda: BlockType.P, {
         "*": BlockType.UL,
         "-": BlockType.UL,
@@ -127,6 +132,9 @@ def identify_block_type(token: str):
 
 
 def make_tuples(group: list[list[str]]):
+    """Type-tag a Markdown block according to what type of HTML block
+    element it should represent.
+    """
     first_token = group[0][0]
     tag = identify_block_type(first_token)
 
@@ -153,6 +161,7 @@ def flatmap(lst, fn: Callable[[str], list[str]]):
 
 
 def tokenize_inline_style_markers(words: list[str]) -> list[str]:
+    """Detach inline style markers from words in 'words'."""
     def split_and_remove_blanks(word) -> list[str]:
         splitted: list[str] = re.split(r"(\*\*|\*|`)", word)
 

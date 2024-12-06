@@ -297,6 +297,10 @@ if __name__ == "__main__":
     nickname = args.nickname
     text: str = get_markdown_file_content(nickname)
 
-    for i in generate_structure(text):
-        print()
-        print(i)
+    tag: Tag
+    for tag, line_group in generate_structure(text):
+        inline_processed = list(map(process_word_group, line_group))
+
+        if tag.is_header():
+            level = tag.value
+            print(f"<h{level}>{inline_processed[0]}</h{level}>")

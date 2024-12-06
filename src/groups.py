@@ -257,7 +257,7 @@ def process_word_group(group: list[str]):
 
                 inside_code = not inside_code
         else:
-            acc.append(f"{word}")
+            acc.append(word)
 
     # This form of the result surrounds even the HTML tags with
     # whitespace; we remove this in the next line, whose value we then

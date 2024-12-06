@@ -264,7 +264,9 @@ def process_word_group(group: list[str]):
     # return.
     spaced_version = " ".join(acc)
     html_regex = r"<(?P<tagname>.+)>\s+(?P<content>.+)\s+</(?P=tagname)>"
-    fixed_tags = re.sub(html_regex, r"<\g<tagname>>\g<content></\g<tagname>>", spaced_version)
+    fixed_tags = re.sub(html_regex,
+                        r"<\g<tagname>>\g<content></\g<tagname>>",
+                        spaced_version)
 
     return fixed_tags
 

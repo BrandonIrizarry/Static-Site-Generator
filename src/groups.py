@@ -210,6 +210,23 @@ def preprocess_typed_block(typed_block: tuple[BlockType, list[list[str]]]):
     return (what, acc)
 
 
+def generate_structure(text: str):
+    blocks: list[str] = split_text_into_blocks(text)
+    line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
+    preprocessed: list[list[str]] = join_code_block_members(line_groups)
+
+    word_tree: list[list[list[str]]] = list(map(create_word_groups,
+                                                preprocessed))
+
+    # Try to emulate a Lisp-style "let*" block.
+    structure = (enum_tagged := map(make_tuples, word_tree),
+                 list(map(preprocess_typed_block, enum_tagged)))[-1]
+
+    for e in structure:
+        print()
+        print(e)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse a Markdown file.")
     parser.add_argument("nickname",
@@ -218,18 +235,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     nickname = args.nickname
-
     text: str = get_markdown_file_content(nickname)
-    blocks: list[str] = split_text_into_blocks(text)
-    line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
-    preprocessed: list[list[str]] = join_code_block_members(line_groups)
 
-    word_tree: list[list[list[str]]] = list(map(create_word_groups,
-                                                preprocessed))
-
-    enum_tagged = list(map(make_tuples, word_tree))
-    enum_tagged = list(map(preprocess_typed_block, enum_tagged))
-
-    for e in enum_tagged:
-        print()
-        print(e)
+    print(generate_structure(text))

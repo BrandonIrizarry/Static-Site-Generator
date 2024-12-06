@@ -1,6 +1,8 @@
 import os
 import argparse
 import re
+import sys
+
 from enum import IntEnum, auto
 from collections import defaultdict
 from typing import Callable, TypeAlias
@@ -290,7 +292,7 @@ def process_word_group(group: list[str]):
     return "".join(acc)
 
 
-def write_html(outfile, text):
+def write_html(outfile, text: str):
     tag: Tag
     for tag, line_group in generate_structure(text):
         inline_processed = list(map(process_word_group, line_group))
@@ -307,14 +309,14 @@ def write_html(outfile, text):
                 lines = item.split("\n")
 
                 lines = [
-                    f"    {lines[0]}",
+                    f"{lines[0]}",
                     *list(map(lambda line: f"<br>{line}",
                               lines[1:]))
                 ]
 
-                lines = "\n    ".join(lines)
+                lines = "".join(lines)
 
-                print(f"<li>\n{lines}\n</li>", file=outfile)
+                print(f"<li>{lines}</li>", file=outfile)
 
             print(f"</{html_tag}>", file=outfile)
             print(file=outfile)
@@ -325,7 +327,8 @@ def write_html(outfile, text):
             html_closing_tag = "</code></pre>"
 
             lines = "\n".join(inline_processed)
-            print(f"{html_opening_tag}\n{lines}\n{html_closing_tag}", file=outfile)
+            print(f"{html_opening_tag}\n{lines}\n{html_closing_tag}",
+                  file=outfile)
 
             print(file=outfile)
         elif tag == Tag.BLOCKQUOTE:
@@ -362,14 +365,15 @@ if __name__ == "__main__":
                         help="The name of the Markdown file (no file suffix)")
 
     parser.add_argument("outfile",
-                        type=str,
+                        type=argparse.FileType("w"),
+                        nargs="?",
+                        default=sys.stdout,
                         help="The full path of the output file")
 
     args = parser.parse_args()
     nickname = args.nickname
-    outfile_name = args.outfile
+    outfile = args.outfile
 
     text: str = get_markdown_file_content(nickname)
 
-    with open(outfile_name, "w", encoding="utf-8") as outfile:
-        write_html(outfile, text)
+    write_html(outfile, text)

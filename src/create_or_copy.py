@@ -1,12 +1,6 @@
 import os
 import shutil
-
-
-root_dir = os.path.expanduser("~/boot_dev/Static_Site_Generator")
-public_dir = f"{root_dir}/public"
-static_dir = f"{root_dir}/static"
-content_source = f"{root_dir}/content/index.md"
-template_source = f"{root_dir}/template.html"
+import sys
 
 
 def create_or_copy(source_root, dest_root, sub_path):
@@ -39,10 +33,8 @@ def create_or_copy(source_root, dest_root, sub_path):
             shutil.copy(full_source_path, full_dest_path)
 
 
-print(f"""
-root_dir: {root_dir}
-public_dir: {public_dir}
-static_dir: {static_dir}
-content_source: {content_source}
-template_source: {template_source}
-""")
+if __name__ == "__main__":
+    source_root = sys.argv[1]
+    dest_root = sys.argv[2]
+
+    create_or_copy(source_root, dest_root, "/")

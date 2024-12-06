@@ -356,7 +356,7 @@ def write_html(outfile, text: str):
             print(file=outfile)
         elif tag == Tag.BLOCKQUOTE:
             html_tag = "blockquote"
-            print(f"<{html_tag}>", file=outfile)
+            generated = [f"<{html_tag}>"]
 
             for item in inline_processed:
                 lines = item.split("\n")
@@ -369,10 +369,12 @@ def write_html(outfile, text: str):
 
                 lines = "\n".join(lines)
 
-                print(lines, file=outfile)
+                generated.extend(lines)
 
-            print(f"</{html_tag}>", file=outfile)
-            print(file=outfile)
+            generated.append(f"</{html_tag}>")
+
+            joined = "".join(generated)
+            print(joined, file=outfile)
         elif tag == Tag.P:
             html_tag = "p"
             print(f"<{html_tag}>", file=outfile)

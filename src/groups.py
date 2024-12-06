@@ -221,6 +221,12 @@ def preprocess_typed_block(typed_block: Block):
 
             acc[-1] = tokenize_inline_style_markers(acc[-1])
 
+    # When we removed the itemization tokens, the space used to
+    # separate it from the item's text still remained; we get rid of
+    # it here.
+    acc = list(map(lambda group: group[1:] if group[0].isspace() else group,
+                   acc))
+
     return (what, acc)
 
 

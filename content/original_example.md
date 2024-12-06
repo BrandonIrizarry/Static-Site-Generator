@@ -6,8 +6,8 @@
 
 ## This is a subheading
 
-This is a paragraph of text. It has some **bold** and *italic* words
-inside of it. This is more of the same paragraph. This is to prove the
+This is a paragraph of text. It has some **bold**, and *italic*, words
+inside of it. This is more of the *same paragraph*. This is to prove the
 point that paragraphs can span multiple lines.
 
 ```

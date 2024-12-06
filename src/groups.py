@@ -323,3 +323,28 @@ if __name__ == "__main__":
 
             print(f"</{html_tag}>")
             print()
+        elif tag == Tag.PRE_CODE:
+            # TODO: it looks like our preprocessing incorrectly
+            # swallows up a space from the code listing itself.
+            html_opening_tag = "<pre><code>"
+            html_closing_tag = "</code></pre>"
+
+            lines = "\n".join(inline_processed)
+            print(f"""{html_opening_tag}
+            \r{lines}
+            \r{html_closing_tag}""")
+
+            print()
+        elif tag == Tag.BLOCKQUOTE:
+            html_tag = "blockquote"
+            print(f"<{html_tag}>")
+
+            for item in inline_processed:
+                lines = item.split("\n")
+                lines = [f"{lines[0]}", *list(map(lambda line: f"<br>{line}", lines[1:]))]
+                lines = "\n".join(lines)
+
+                print(lines)
+
+            print(f"</{html_tag}>")
+            print()

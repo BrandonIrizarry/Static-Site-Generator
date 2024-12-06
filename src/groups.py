@@ -251,15 +251,22 @@ def process_word_group(group: list[str]):
                 inside_italic = not inside_italic
         elif word == "`":
             if inside_code:
-                acc.append("<code>")
-            else:
                 acc.append("</code>")
+            else:
+                acc.append("<code>")
 
                 inside_code = not inside_code
         else:
-            acc.append(word)
+            acc.append(f"{word}")
 
-    return "".join(acc)
+    # This form of the result surrounds even the HTML tags with
+    # whitespace; we remove this in the next line, whose value we then
+    # return.
+    spaced_version = " ".join(acc)
+    html_regex = r"<(?P<tagname>.+)>\s+(?P<content>.+)\s+</(?P=tagname)>"
+    fixed_tags = re.sub(html_regex, r"<\g<tagname>>\g<content></\g<tagname>>", spaced_version)
+
+    return fixed_tags
 
 
 if __name__ == "__main__":

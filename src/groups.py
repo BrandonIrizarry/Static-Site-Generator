@@ -106,9 +106,20 @@ def join_code_block_members(line_groups: list[list[str]]) -> list[list[str]]:
     return acc
 
 
+def split_keep_whitespace(line: str) -> list[str]:
+    """Split a string by whitespace, but keep the whitespace.
+
+    This whitespace is necessary for reconstructing the string later.
+
+    """
+    splitted = re.split(r"(\s+)", line)
+
+    return splitted
+
+
 def create_word_groups(line_group: list[str]) -> list[list[str]]:
     """Tokenize 'line_group' into separate words."""
-    word_groups = list(map(lambda line: re.split(r"\s+", line), line_group))
+    word_groups = list(map(split_keep_whitespace, line_group))
 
     return word_groups
 

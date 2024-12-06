@@ -290,27 +290,18 @@ def process_word_group(group: list[str]):
     return "".join(acc)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Parse a Markdown file.")
-    parser.add_argument("nickname",
-                        type=str,
-                        help="The name of the Markdown file (no file suffix)")
-
-    args = parser.parse_args()
-    nickname = args.nickname
-    text: str = get_markdown_file_content(nickname)
-
+def write_html(outfile, text):
     tag: Tag
     for tag, line_group in generate_structure(text):
         inline_processed = list(map(process_word_group, line_group))
 
         if tag.is_header():
             level = tag.value
-            print(f"<h{level}>{inline_processed[0]}</h{level}>")
-            print()
+            print(f"<h{level}>{inline_processed[0]}</h{level}>", file=outfile)
+            print(file=outfile)
         elif tag.is_list():
             html_tag = str(tag).lower()
-            print(f"<{html_tag}>")
+            print(f"<{html_tag}>", file=outfile)
 
             for item in inline_processed:
                 lines = item.split("\n")
@@ -323,12 +314,10 @@ if __name__ == "__main__":
 
                 lines = "\n    ".join(lines)
 
-                print(f"""\r<li>
-                \r{lines}
-                \r</li>""")
+                print(f"<li>\n{lines}\n</li>", file=outfile)
 
-            print(f"</{html_tag}>")
-            print()
+            print(f"</{html_tag}>", file=outfile)
+            print(file=outfile)
         elif tag == Tag.PRE_CODE:
             # TODO: it looks like our preprocessing incorrectly
             # swallows up a space from the code listing itself.
@@ -336,14 +325,12 @@ if __name__ == "__main__":
             html_closing_tag = "</code></pre>"
 
             lines = "\n".join(inline_processed)
-            print(f"""{html_opening_tag}
-            \r{lines}
-            \r{html_closing_tag}""")
+            print(f"{html_opening_tag}\n{lines}\n{html_closing_tag}", file=outfile)
 
-            print()
+            print(file=outfile)
         elif tag == Tag.BLOCKQUOTE:
             html_tag = "blockquote"
-            print(f"<{html_tag}>")
+            print(f"<{html_tag}>", file=outfile)
 
             for item in inline_processed:
                 lines = item.split("\n")
@@ -356,13 +343,33 @@ if __name__ == "__main__":
 
                 lines = "\n".join(lines)
 
-                print(lines)
+                print(lines, file=outfile)
 
-            print(f"</{html_tag}>")
-            print()
+            print(f"</{html_tag}>", file=outfile)
+            print(file=outfile)
         elif tag == Tag.P:
             html_tag = "p"
-            print(f"<{html_tag}>")
-            print("\n<br>".join(inline_processed))
-            print(f"</{html_tag}>")
-            print()
+            print(f"<{html_tag}>", file=outfile)
+            print("\n<br>".join(inline_processed), file=outfile)
+            print(f"</{html_tag}>", file=outfile)
+            print(file=outfile)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Parse a Markdown file.")
+    parser.add_argument("nickname",
+                        type=str,
+                        help="The name of the Markdown file (no file suffix)")
+
+    parser.add_argument("outfile",
+                        type=str,
+                        help="The full path of the output file")
+
+    args = parser.parse_args()
+    nickname = args.nickname
+    outfile_name = args.outfile
+
+    text: str = get_markdown_file_content(nickname)
+
+    with open(outfile_name, "w", encoding="utf-8") as outfile:
+        write_html(outfile, text)

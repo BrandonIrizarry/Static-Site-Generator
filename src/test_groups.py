@@ -9,7 +9,6 @@ class TestProcessWordGroup(unittest.TestCase):
 
         self.assertEqual(processed, "<b>This</b>")
 
-        print(processed)
 
     def test_multiple_simple_cases(self):
         group = ["This", "**", "is", "**", "a", "*", "line", "*", ":", "`", "hello", "world", "`"]

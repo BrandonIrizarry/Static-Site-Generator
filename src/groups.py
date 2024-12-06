@@ -314,7 +314,13 @@ if __name__ == "__main__":
 
             for item in inline_processed:
                 lines = item.split("\n")
-                lines = [f"    {lines[0]}", *list(map(lambda line: f"<br>{line}", lines[1:]))]
+
+                lines = [
+                    f"    {lines[0]}",
+                    *list(map(lambda line: f"<br>{line}",
+                              lines[1:]))
+                ]
+
                 lines = "\n    ".join(lines)
 
                 print(f"""\r<li>
@@ -341,7 +347,13 @@ if __name__ == "__main__":
 
             for item in inline_processed:
                 lines = item.split("\n")
-                lines = [f"{lines[0]}", *list(map(lambda line: f"<br>{line}", lines[1:]))]
+
+                lines = [
+                    lines[0],
+                    *list(map(lambda line: f"<br>{line}",
+                              lines[1:]))
+                ]
+
                 lines = "\n".join(lines)
 
                 print(lines)

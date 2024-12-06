@@ -348,3 +348,9 @@ if __name__ == "__main__":
 
             print(f"</{html_tag}>")
             print()
+        elif tag == Tag.P:
+            html_tag = "p"
+            print(f"<{html_tag}>")
+            print("\n<br>".join(inline_processed))
+            print(f"</{html_tag}>")
+            print()

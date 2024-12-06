@@ -292,6 +292,8 @@ def process_word_group(group: list[str]):
     return "".join(acc)
 
 
+# FIXME: it looks like this potentially performs the inline
+# substitutions even within code blocks.
 def write_html(outfile, text: str):
     tag: Tag
     for tag, line_group in generate_structure(text):

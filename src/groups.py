@@ -31,6 +31,9 @@ class Tag(IntEnum):
     def is_header(self):
         return self in range(self.H1, self.H6)
 
+    def __str__(self):
+        return self._name_
+
 
 Block: TypeAlias = tuple[Tag, list[list[str]]]
 

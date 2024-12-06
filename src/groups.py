@@ -228,6 +228,40 @@ def generate_structure(text: str) -> list[Block]:
     return structure
 
 
+def process_word_group(group: list[str]):
+    acc = []
+    inside_bold = False
+    inside_italic = False
+    inside_code = False
+
+    for word in group:
+        if word == "**":
+            if inside_bold:
+                acc.append("</b>")
+            else:
+                acc.append("<b>")
+
+                inside_bold = not inside_bold
+        elif word == "*":
+            if inside_italic:
+                acc.append("</i>")
+            else:
+                acc.append("<i>")
+
+                inside_italic = not inside_italic
+        elif word == "`":
+            if inside_code:
+                acc.append("<code>")
+            else:
+                acc.append("</code>")
+
+                inside_code = not inside_code
+        else:
+            acc.append(word)
+
+    return "".join(acc)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse a Markdown file.")
     parser.add_argument("nickname",

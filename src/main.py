@@ -114,6 +114,25 @@ def join_code_block_members(line_groups: list[list[str]]) -> list[list[str]]:
     return acc
 
 
+def fix_links(line_groups: list[list[str]]) -> list[list[str]]:
+    def generate_html(matchobj):
+        src = matchobj.group("src")
+        alt = matchobj.group("alt")
+
+        if matchobj.group("what") == "!":
+            return f"<img src={src} alt={alt}>"
+        elif matchobj.group("what") == "":
+            return f"<a href={src}>{alt}</a>"
+
+    def fix_group(group):
+        return map(lambda s: re.sub(r"(?P<what>!?)\[(?P<alt>.+?)\]\((?P<src>.+?)\)",
+                                    generate_html,
+                                    s),
+                   group)
+
+    return list(map(fix_group, line_groups))
+
+
 def split_keep_whitespace(line: str) -> list[str]:
     """Split a string by whitespace, but keep the whitespace.
 
@@ -246,6 +265,8 @@ def generate_structure(text: str) -> list[Block]:
     blocks: list[str] = split_text_into_blocks(text)
     line_groups: list[list[str]] = list(map(split_block_into_lines, blocks))
     preprocessed: list[list[str]] = join_code_block_members(line_groups)
+
+    preprocessed = fix_links(preprocessed)
 
     word_tree: list[list[list[str]]] = list(map(create_word_groups,
                                                 preprocessed))

@@ -31,6 +31,9 @@ class Tag(IntEnum):
     def is_header(self):
         return self in range(self.H1, self.H6)
 
+    def is_list(self):
+        return self in (self.OL, self.UL)
+
     def __str__(self):
         return self._name_
 
@@ -304,3 +307,19 @@ if __name__ == "__main__":
         if tag.is_header():
             level = tag.value
             print(f"<h{level}>{inline_processed[0]}</h{level}>")
+            print()
+        elif tag.is_list():
+            html_tag = str(tag).lower()
+            print(f"<{html_tag}>")
+
+            for item in inline_processed:
+                lines = item.split("\n")
+                lines = [f"    {lines[0]}", *list(map(lambda line: f"<br>{line}", lines[1:]))]
+                lines = "\n    ".join(lines)
+
+                print(f"""\r<li>
+                \r{lines}
+                \r</li>""")
+
+            print(f"</{html_tag}>")
+            print()

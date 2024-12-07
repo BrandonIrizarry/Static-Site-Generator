@@ -15,7 +15,8 @@ def get_extension(filename):
 def create_or_copy(source_root,
                    dest_root,
                    sub_path,
-                   conversion_flag=False):
+                   conversion_flag=False,
+                   bootstrap_flag=False):
     """Copy all data from 'source_root' to 'dest_root', keeping track
     of the current sub-path common to both of them (the third
     argument.)
@@ -25,12 +26,12 @@ def create_or_copy(source_root,
     dest_path = f"{dest_root}{sub_path}"
 
     # If the destination path exists, delete it completely.
-    if os.path.exists(dest_path):
+    if os.path.exists(dest_path) and bootstrap_flag:
         shutil.rmtree(dest_path)
 
-    # Note that we have to create 'public' even if it existed before,
-    # because we therefore deleted it in the previous if-statement.
-    os.mkdir(dest_path)
+    # Make 'os.mkdir' a bit more like the shell's 'mkdir'.
+    if not os.path.exists(dest_path):
+        os.mkdir(dest_path)
 
     paths = os.listdir(source_path)
 
@@ -79,11 +80,16 @@ if __name__ == "__main__":
                         help="Use a full path instead of a nickname",
                         action="store_true")
 
+    parser.add_argument("--bootstrap",
+                        help="Obliterate the existing 'public' directory",
+                        action="store_true")
+
     args = parser.parse_args()
 
     create_or_copy(
         args.source_root,
         args.dest_root,
         "/",
-        args.content
+        args.content,
+        args.bootstrap
     )

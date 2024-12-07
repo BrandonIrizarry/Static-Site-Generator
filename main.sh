@@ -13,7 +13,8 @@ dest_file="$HOME"/boot_dev/Static_Site_Generator/public/index.html
 
 python3 "$HOME"/boot_dev/Static_Site_Generator/src/create_or_copy.py\
         "$static_dir"\
-        "$public_dir"
+        "$public_dir"\
+        --bootstrap
 
 
 python3 "$HOME"/boot_dev/Static_Site_Generator/src/create_or_copy.py\

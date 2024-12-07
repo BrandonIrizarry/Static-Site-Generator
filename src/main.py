@@ -103,9 +103,9 @@ def fix_links(line_groups: list[list[str]]) -> list[list[str]]:
         alt = matchobj.group("alt")
 
         if matchobj.group("what") == "!":
-            return f"<img src={src} alt={alt}>"
+            return f"<img src=\"{src}\" alt=\"{alt}\">"
         elif matchobj.group("what") == "":
-            return f"<a href={src}>{alt}</a>"
+            return f"<a href=\"{src}\">{alt}</a>"
 
     def fix_group(group):
         return map(

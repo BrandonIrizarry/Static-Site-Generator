@@ -125,10 +125,11 @@ def fix_links(line_groups: list[list[str]]) -> list[list[str]]:
             return f"<a href={src}>{alt}</a>"
 
     def fix_group(group):
-        return map(lambda s: re.sub(r"(?P<what>!?)\[(?P<alt>.+?)\]\((?P<src>.+?)\)",
-                                    generate_html,
-                                    s),
-                   group)
+        return map(
+            lambda s: re.sub(r"(?P<what>!?)\[(?P<alt>.+?)\]\((?P<src>.+?)\)",
+                             generate_html,
+                             s),
+            group)
 
     return list(map(fix_group, line_groups))
 

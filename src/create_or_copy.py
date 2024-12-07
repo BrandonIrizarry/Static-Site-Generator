@@ -15,11 +15,14 @@ def get_extension(filename):
 def create_or_copy(source_root,
                    dest_root,
                    sub_path,
-                   conversion_flag=False,
+                   template_path=None,
                    bootstrap_flag=False):
     """Copy all data from 'source_root' to 'dest_root', keeping track
     of the current sub-path common to both of them (the third
     argument.)
+
+    The presence of a template implies we're to convert Markdown files
+    we see first into HTML, using the template.
 
     """
     source_path = f"{source_root}{sub_path}"
@@ -43,7 +46,7 @@ def create_or_copy(source_root,
             create_or_copy(source_root,
                            dest_root,
                            f"{sub_path}{entry}/",
-                           conversion_flag)
+                           template_path)
         else:
             full_dest_path = f"{dest_path}{entry}"
             extension = get_extension(full_source_path)
@@ -52,14 +55,14 @@ def create_or_copy(source_root,
             # copy Markdown from the 'content' directory, but we
             # subvert this (whenever it happens) by first converting
             # the Markdown to HTML, and copying that instead.
-            if conversion_flag and extension == "md":
+            if template_path and extension == "md":
                 # We generate the HTML into the same 'content'
                 # directory, so that it gets copied over in the same
                 # path-respecting manner as the rest of the stuff.
                 html_source_path = re.sub(r"\.md$", ".html", full_source_path)
                 html_dest_path = re.sub(r"\.md$", ".html", full_dest_path)
 
-                run(full_source_path, html_source_path)
+                run(full_source_path, html_source_path, template_path)
                 shutil.copy(html_source_path, html_dest_path)
             else:
                 shutil.copy(full_source_path, full_dest_path)
@@ -76,9 +79,8 @@ if __name__ == "__main__":
     parser.add_argument("dest_root",
                         type=str)
 
-    parser.add_argument("--content",
-                        help="Use a full path instead of a nickname",
-                        action="store_true")
+    parser.add_argument("--template",
+                        type=str)
 
     parser.add_argument("--bootstrap",
                         help="Obliterate the existing 'public' directory",
@@ -90,6 +92,6 @@ if __name__ == "__main__":
         args.source_root,
         args.dest_root,
         "/",
-        args.content,
+        args.template,
         args.bootstrap
     )

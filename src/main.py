@@ -299,18 +299,21 @@ def process_word_group(group: list[str]):
 
 # FIXME: it looks like this potentially performs the inline
 # substitutions even within code blocks.
-def write_html(outfile, text: str):
+def write_html(text: str):
+    # Let's use a "string builder" approach.
+    result = []
+
     tag: Tag
     for tag, line_group in generate_structure(text):
         inline_processed = list(map(process_word_group, line_group))
 
         if tag.is_header():
             level = tag.value
-            print(f"<h{level}>{inline_processed[0]}</h{level}>", file=outfile)
-            print(file=outfile)
+            result.append(f"<h{level}>{inline_processed[0]}</h{level}>")
+            result.append("\n")
         elif tag.is_list():
             html_tag = str(tag).lower()
-            print(f"<{html_tag}>", file=outfile)
+            result.append(f"<{html_tag}>")
 
             for item in inline_processed:
                 lines = item.split("\n")
@@ -323,10 +326,10 @@ def write_html(outfile, text: str):
 
                 lines = "".join(lines)
 
-                print(f"<li>{lines}</li>", file=outfile)
+                result.append(f"<li>{lines}</li>")
 
-            print(f"</{html_tag}>", file=outfile)
-            print(file=outfile)
+            result.append(f"</{html_tag}>")
+            result.append("\n")
         elif tag == Tag.PRE_CODE:
             # FIXME: it looks like our preprocessing swallows up a
             # space from the code listing itself.
@@ -334,10 +337,8 @@ def write_html(outfile, text: str):
             html_closing_tag = "</code></pre>"
 
             lines = "\n".join(inline_processed)
-            print(f"{html_opening_tag}\n{lines}\n{html_closing_tag}",
-                  file=outfile)
-
-            print(file=outfile)
+            result.append(f"{html_opening_tag}\n{lines}\n{html_closing_tag}")
+            result.append("\n")
         elif tag == Tag.BLOCKQUOTE:
             html_tag = "blockquote"
             generated = [f"<{html_tag}>"]
@@ -358,20 +359,50 @@ def write_html(outfile, text: str):
             generated.append(f"</{html_tag}>")
 
             joined = "".join(generated)
-            print(joined, file=outfile)
+            result.append(joined)
+            result.append("\n")
         elif tag == Tag.P:
             html_tag = "p"
-            print(f"<{html_tag}>", file=outfile)
-            print("\n<br>".join(inline_processed), file=outfile)
-            print(f"</{html_tag}>", file=outfile)
-            print(file=outfile)
+            result.append(f"<{html_tag}>")
+            result.append("\n<br>".join(inline_processed))
+            result.append(f"</{html_tag}>")
+            result.append("\n")
+
+    return result
 
 
-def run(markdown_filename, oname):
+def run(markdown_filename, oname, template_path=None):
     with open(markdown_filename, "r", encoding="utf-8") as markdown_file:
         outfile = sys.stdout if oname is None else open(oname, "w")
         markdown_text = markdown_file.read()
-        write_html(outfile or sys.stdout, markdown_text)
+        result = write_html(markdown_text)
+        joined = "\n".join(result)
+
+        if not template_path:
+            outfile.write(joined)
+        else:
+            title = None
+
+            for line in result:
+                if (m := re.match(r"<h1>(.+?)</h1>", line)):
+                    title = m.group(1)
+                    break
+
+            if title is None:
+                raise RuntimeError("Missing title")
+
+            with open(template_path, "r", encoding="utf-8") as template_file:
+                template_contents = template_file.read()
+
+                def do_what(matchobj):
+                    match matchobj.group(1):
+                        case "Title":
+                            return title
+                        case "Content":
+                            return joined
+
+                filled_in_template = re.sub(r"{{\s+(.+?)\s+}}", do_what, template_contents)
+                outfile.write(filled_in_template)
 
         outfile.close()
 

@@ -20,13 +20,7 @@ python3 "$HOME"/boot_dev/Static_Site_Generator/src/create_or_copy.py\
 python3 "$HOME"/boot_dev/Static_Site_Generator/src/create_or_copy.py\
         "$content_dir"\
         "$public_dir"\
-        --content
+        --template "$template"
 
 
-
-# python3 "$HOME"/boot_dev/Static_Site_Generator/src/main.py "$default_nickname" 
-
-
-# python3 "$HOME"/boot_dev/Static_Site_Generator/src/copy_html_to_template.py "$template" "$tmpfile" "$dest_file"
-
-# cd public && python3 -m http.server 8888
+cd public && python3 -m http.server 8888

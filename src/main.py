@@ -367,11 +367,13 @@ def write_html(outfile, text: str):
             print(file=outfile)
 
 
-def run(markdown_filename):
+def run(markdown_filename, oname):
     with open(markdown_filename, "r", encoding="utf-8") as markdown_file:
+        outfile = sys.stdout if oname is None else open(oname, "w")
         markdown_text = markdown_file.read()
+        write_html(outfile or sys.stdout, markdown_text)
 
-        write_html(outfile, markdown_text)
+        outfile.close()
 
 
 if __name__ == "__main__":
@@ -381,10 +383,9 @@ if __name__ == "__main__":
                         help="The name of the Markdown file (no file suffix)")
 
     parser.add_argument("outfile",
-                        type=argparse.FileType("w"),
+                        type=str,
                         nargs="?",
-                        default=sys.stdout,
-                        help="The full path of the output file")
+                        help="The full path of the output file"),
 
     parser.add_argument("--full",
                         help="Use a full path instead of a nickname",
@@ -392,7 +393,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     name = args.nickname
-    outfile = args.outfile
+    outfile_name = args.outfile
 
     markdown_filename = None
 
@@ -403,4 +404,4 @@ if __name__ == "__main__":
             f"~/boot_dev/Static_Site_Generator/content/{name}.md"
         )
 
-    run(markdown_filename)
+    run(markdown_filename, outfile_name)

@@ -1,9 +1,21 @@
 import os
 import shutil
-import sys
+import re
+import argparse
+
+from main import run
 
 
-def create_or_copy(source_root, dest_root, sub_path):
+def get_extension(filename):
+    b = os.path.basename(filename)
+    parts = b.split(".")
+    return parts[-1]
+
+
+def create_or_copy(source_root,
+                   dest_root,
+                   sub_path,
+                   conversion_flag=False):
     """Copy all data from 'source_root' to 'dest_root', keeping track
     of the current sub-path common to both of them (the third
     argument.)
@@ -27,14 +39,51 @@ def create_or_copy(source_root, dest_root, sub_path):
 
         if os.path.isdir(full_source_path):
             # 'source_path' must always end with a slash.
-            create_or_copy(source_root, dest_root, f"{sub_path}{entry}/")
+            create_or_copy(source_root,
+                           dest_root,
+                           f"{sub_path}{entry}/",
+                           conversion_flag)
         else:
             full_dest_path = f"{dest_path}{entry}"
-            shutil.copy(full_source_path, full_dest_path)
+            extension = get_extension(full_source_path)
+
+            # A True 'conversion_flag' value means we're trying to
+            # copy Markdown from the 'content' directory, but we
+            # subvert this (whenever it happens) by first converting
+            # the Markdown to HTML, and copying that instead.
+            if conversion_flag and extension == "md":
+                # We generate the HTML into the same 'content'
+                # directory, so that it gets copied over in the same
+                # path-respecting manner as the rest of the stuff.
+                html_source_path = re.sub(r"\.md$", ".html", full_source_path)
+                html_dest_path = re.sub(r"\.md$", ".html", full_dest_path)
+
+                run(full_source_path, html_source_path)
+                shutil.copy(html_source_path, html_dest_path)
+            else:
+                shutil.copy(full_source_path, full_dest_path)
 
 
 if __name__ == "__main__":
-    source_root = sys.argv[1]
-    dest_root = sys.argv[2]
+    parser = argparse.ArgumentParser(
+        description="Copy static and built artifacts into a public directory."
+    )
 
-    create_or_copy(source_root, dest_root, "/")
+    parser.add_argument("source_root",
+                        type=str)
+
+    parser.add_argument("dest_root",
+                        type=str)
+
+    parser.add_argument("--content",
+                        help="Use a full path instead of a nickname",
+                        action="store_true")
+
+    args = parser.parse_args()
+
+    create_or_copy(
+        args.source_root,
+        args.dest_root,
+        "/",
+        args.content
+    )

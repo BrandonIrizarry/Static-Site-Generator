@@ -43,23 +43,6 @@ class Tag(IntEnum):
 Block: TypeAlias = tuple[Tag, list[list[str]]]
 
 
-def get_markdown_file_content(nickname: str) -> str:
-    """Return contents of 'nickname'.md.
-
-    This file should be found in the 'content' directory, under the
-    project root.
-
-    """
-    markdown_filename = os.path.expanduser(
-        f"~/boot_dev/Static_Site_Generator/content/{nickname}.md"
-    )
-
-    with open(markdown_filename, "r", encoding="utf-8") as markdown_file:
-        markdown_text = markdown_file.read()
-
-        return markdown_text
-
-
 def split_text_into_blocks(text: str) -> list[str]:
     """Isolate 'text' into blocks which are more readily identifiable
     as Markdown entities."""
@@ -384,6 +367,13 @@ def write_html(outfile, text: str):
             print(file=outfile)
 
 
+def run(markdown_filename):
+    with open(markdown_filename, "r", encoding="utf-8") as markdown_file:
+        markdown_text = markdown_file.read()
+
+        write_html(outfile, markdown_text)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse a Markdown file.")
     parser.add_argument("nickname",
@@ -396,10 +386,21 @@ if __name__ == "__main__":
                         default=sys.stdout,
                         help="The full path of the output file")
 
+    parser.add_argument("--full",
+                        help="Use a full path instead of a nickname",
+                        action="store_true")
+
     args = parser.parse_args()
-    nickname = args.nickname
+    name = args.nickname
     outfile = args.outfile
 
-    text: str = get_markdown_file_content(nickname)
+    markdown_filename = None
 
-    write_html(outfile, text)
+    if args.full:
+        markdown_filename = name
+    else:
+        markdown_filename = os.path.expanduser(
+            f"~/boot_dev/Static_Site_Generator/content/{name}.md"
+        )
+
+    run(markdown_filename)
